@@ -72,4 +72,4 @@ jobs:
         az webapp deploy \
           --resource-group webapp-rg-dev \
           --name AzureSchoolProject \
-          --src publish.zip
+          --src-path publish.zip
