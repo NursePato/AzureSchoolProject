@@ -69,7 +69,7 @@ jobs:
 
     - name: Deploy to Azure Web App using zip
       run: |
-        az webapp deployment source config-zip \
+        az webapp deploy \
           --resource-group webapp-rg-dev \
           --name AzureSchoolProject \
           --src publish.zip
