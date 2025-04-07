@@ -137,4 +137,4 @@ jobs:
         with:
           app-name: 'AzureSchoolProject'
           slot-name: 'Production'
-          package: ./bin/Publish
+          package: ${{ github.workspace }}
