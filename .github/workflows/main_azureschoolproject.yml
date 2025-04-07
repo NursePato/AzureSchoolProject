@@ -67,9 +67,17 @@ jobs:
           --password ${{ secrets.AZURE_CLIENT_SECRET }} \
           --tenant ${{ secrets.AZURE_TENANT_ID }}
 
-    - name: Deploy to Azure Web App using zip
+    - name: Deploy to Azure Web App using OneDeploy
       run: |
-        az webapp deploy \
-          --resource-group webapp-rg-dev \
-          --name AzureSchoolProject \
-          --src-path publish.zip
+        az webapp deployment source config-zip \
+           --resource-group webapp-rg-dev \
+           --name AzureSchoolProject \
+           --src-path publish.zip \
+           --type zip
+
+    # - name: Deploy to Azure Web App using zip
+    #   run: |
+    #     az webapp deploy \
+    #       --resource-group webapp-rg-dev \
+    #       --name AzureSchoolProject \
+    #       --src-path publish.zip
