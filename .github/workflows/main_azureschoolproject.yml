@@ -29,6 +29,53 @@
 #         publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
 #         package: ./publish
 
+
+
+# name: Build and deploy .NET app to Azure Web App - AzureSchoolProject
+
+# on:
+#   push:
+#     branches:
+#       - main
+#   workflow_dispatch:
+
+# jobs:
+#   build-and-deploy:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#     - name: Checkout repository
+#       uses: actions/checkout@v4
+
+#     - name: Setup .NET SDK
+#       uses: actions/setup-dotnet@v3
+#       with:
+#         dotnet-version: '8.0.x'
+
+#     - name: Publish .NET project
+#       run: dotnet publish ./GameStore.csproj -c Release -o ./bin/Release/net8.0/publish --self-contained
+
+#     - name: Zip published output
+#       run: zip -r publish.zip ./bin/Release/net8.0/publish
+
+#     - name: Install Azure CLI
+#       run: |
+#         curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+
+#     - name: Azure CLI login
+#       run: |
+#         az login --service-principal \
+#           --username ${{ secrets.AZURE_CLIENT_ID }} \
+#           --password ${{ secrets.AZURE_CLIENT_SECRET }} \
+#           --tenant ${{ secrets.AZURE_TENANT_ID }}
+
+#     - name: Deploy to Azure Web App using OneDeploy
+#       run: |
+#         az webapp deployment source config-zip \
+#            --resource-group webapp-rg-dev \
+#            --name AzureSchoolProject \
+#            --src publish.zip
+
 name: Build and deploy .NET app to Azure Web App - AzureSchoolProject
 
 on:
@@ -38,46 +85,56 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Setup .NET SDK
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: '8.0.x'
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x' # or whatever version your project targets
 
-    - name: Publish .NET project
-      run: dotnet publish ./GameStore.csproj -c Release -o ./bin/Release/net8.0/publish --self-contained
+      - name: Restore dependencies
+        run: dotnet restore
 
-    - name: Zip published output
-      run: zip -r publish.zip ./bin/Release/net8.0/publish
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
 
-    - name: Install Azure CLI
-      run: |
-        curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+      - name: Publish
+        run: dotnet publish --configuration Release --output ./bin/Publish
 
-    - name: Azure CLI login
-      run: |
-        az login --service-principal \
-          --username ${{ secrets.AZURE_CLIENT_ID }} \
-          --password ${{ secrets.AZURE_CLIENT_SECRET }} \
-          --tenant ${{ secrets.AZURE_TENANT_ID }}
+      - name: Upload artifact for deployment job
+        uses: actions/upload-artifact@v4
+        with:
+          name: dotnet-app
+          path: ./bin/Publish
 
-    - name: Deploy to Azure Web App using OneDeploy
-      run: |
-        az webapp deployment source config-zip \
-           --resource-group webapp-rg-dev \
-           --name AzureSchoolProject \
-           --src publish.zip
-#           --type zip
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
 
-    # - name: Deploy to Azure Web App using zip
-    #   run: |
-    #     az webapp deploy \
-    #       --resource-group webapp-rg-dev \
-    #       --name AzureSchoolProject \
-    #       --src-path publish.zip
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v4
+        with:
+          name: dotnet-app
+
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_633AF28787F4474FBD8ADA20CF1CAEB9 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_AF9785BE53DF44B08AECEB6DEA8E941A }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_B1B90479F9004C28B1DECEF39CBA550A }}
+
+      - name: Deploy to Azure Web App
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'AzureSchoolProject'
+          slot-name: 'Production'
+          package: .
