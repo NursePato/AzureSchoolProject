@@ -51,7 +51,7 @@ jobs:
         dotnet-version: '8.0.x'
 
     - name: Publish .NET project
-      run: dotnet publish ./GameStore.csproj -c Release -o ./publish
+      run: dotnet publish ./GameStore.csproj -c Release -o ./publish -r win-x64 --self-contained
 
     - name: Zip published output
       run: zip -r publish.zip ./publish
