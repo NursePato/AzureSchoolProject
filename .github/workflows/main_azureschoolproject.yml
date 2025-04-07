@@ -124,12 +124,12 @@ jobs:
         with:
           name: dotnet-app
 
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_633AF28787F4474FBD8ADA20CF1CAEB9 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_AF9785BE53DF44B08AECEB6DEA8E941A }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_B1B90479F9004C28B1DECEF39CBA550A }}
+      - name: Azure CLI login
+        run: |
+          az login --service-principal \
+          --username ${{ secrets.AZURE_CLIENT_ID }} \
+          --password ${{ secrets.AZURE_CLIENT_SECRET }} \
+          --tenant ${{ secrets.AZURE_TENANT_ID }}
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
