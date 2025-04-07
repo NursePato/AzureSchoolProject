@@ -25,6 +25,6 @@ jobs:
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v2
       with:
-        app-name: 'AzureSchoolProject' # Replace with your actual App Service name
+        app-name: 'CUA24S_GAMESTORE' # Replace with your actual App Service name
         publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
         package: ./publish
