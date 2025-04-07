@@ -57,9 +57,21 @@ jobs:
     - name: List contents of publish folder (for debugging)
       run: ls -R ./publish
 
+    - name: Wait for app service to be ready
+      run: sleep 15
+
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v3
       with:
         app-name: 'AzureSchoolProject' # Make sure this matches the name in Azure
         publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
         package: ./publish
+    - name: Retry Deployment (if failed)
+      if: steps.deploy-step.outcome == 'failure'
+      run: |
+          echo "Retrying deployment after waiting 30 seconds..."
+          sleep 30
+          az webapp deployment source config-zip \
+            --resource-group webapp-rg-dev \
+            --name AzureSchoolProject \
+            --src ./publish
