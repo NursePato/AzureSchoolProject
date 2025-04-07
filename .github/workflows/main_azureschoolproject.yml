@@ -51,10 +51,10 @@ jobs:
         dotnet-version: '8.0.x'
 
     - name: Publish .NET project
-      run: dotnet publish ./GameStore.csproj -c Release -o ./publish -r win-x64 --self-contained
+      run: dotnet publish ./GameStore.csproj -c Release -o ./bin/Release/net8.0/publish --self-contained
 
     - name: Zip published output
-      run: zip -r publish.zip ./bin/publish
+      run: zip -r publish.zip ./bin/Release/net8.0/publish
 
     - name: Install Azure CLI
       run: |
@@ -72,7 +72,7 @@ jobs:
         az webapp deployment source config-zip \
            --resource-group webapp-rg-dev \
            --name AzureSchoolProject \
-           --src publish.zip \
+           --src publish.zip
 #           --type zip
 
     # - name: Deploy to Azure Web App using zip
