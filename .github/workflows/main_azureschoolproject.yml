@@ -1,36 +1,3 @@
-# name: Build and deploy .NET app to Azure Web App - AzureSchoolProject
-
-# on:
-#   push:
-#     branches:
-#       - main
-#   workflow_dispatch:
-
-# jobs:
-#   build-and-deploy:
-#     runs-on: ubuntu-latest
-
-#     steps:
-#     - name: Checkout repository
-#       uses: actions/checkout@v4
-
-#     - name: Setup .NET Core SDK
-#       uses: actions/setup-dotnet@v3
-#       with:
-#         dotnet-version: '8.0.x' # or '6.0.x' depending on your project
-
-#     - name: Publish .NET project
-#       run: dotnet publish -c Release -o ./publish
-
-#     - name: Deploy to Azure Web App
-#       uses: azure/webapps-deploy@v2
-#       with:
-#         app-name: 'AzureSchoolProject' # Replace with your actual App Service name
-#         publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
-#         package: ./publish
-
-
-
 name: Build and deploy .NET app to Azure Web App - AzureSchoolProject
 
 on:
@@ -55,9 +22,6 @@ jobs:
     - name: Publish .NET project
       run: dotnet publish ./GameStore.csproj -c Release -o ./bin/Release/net8.0/publish --self-contained
 
-    # - name: Zip published output
-    #   run: zip -r publish.zip ./bin/Release/net8.0/publish ## Working?
-
     - name: Zip published output
       run: |
         cd ./bin/Release/net8.0/publish
@@ -79,73 +43,8 @@ jobs:
         az webapp deployment source config-zip \
            --resource-group webapp-rg-dev \
            --name AzureSchoolProject \
-           --src publish.zip
-           --timeout 600 || echo "Deployment command exited with error but continuing..."
-           
+           --src publish.zip \
+           --timeout 300 || echo "Deployment command exited with error but continuing..."
+
     - name: Clean up
       run: rm publish.zip
-
-# name: Build and deploy .NET app to Azure Web App - AzureSchoolProject
-
-# on:
-#   push:
-#     branches:
-#       - main
-#   workflow_dispatch:
-
-# jobs:
-#   build:
-#     runs-on: ubuntu-latest
-#     permissions:
-#       contents: read
-
-#     steps:
-#       - name: Checkout code
-#         uses: actions/checkout@v4
-
-#       - name: Setup .NET Core
-#         uses: actions/setup-dotnet@v4
-#         with:
-#           dotnet-version: '8.0.x' # or whatever version your project targets
-
-#       - name: Restore dependencies
-#         run: dotnet restore
-
-#       - name: Build
-#         run: dotnet build --configuration Release --no-restore
-
-#       - name: Publish
-#         run: |
-#           PROJECT_PATH=$(find . -name '*.csproj' | head -n 1)
-#           dotnet publish "$PROJECT_PATH" --configuration Release --output ./bin/Publish
-
-#       - name: Upload artifact for deployment job
-#         uses: actions/upload-artifact@v4
-#         with:
-#           name: dotnet-app
-#           path: ./bin/Publish
-
-#   deploy:
-#     runs-on: ubuntu-latest
-#     needs: build
-
-#     steps:
-#       - name: Download artifact from build job
-#         uses: actions/download-artifact@v4
-#         with:
-#           name: dotnet-app
-
-#       - name: Azure CLI login
-#         run: |
-#           az login --service-principal \
-#           --username ${{ secrets.AZURE_CLIENT_ID }} \
-#           --password ${{ secrets.AZURE_CLIENT_SECRET }} \
-#           --tenant ${{ secrets.AZURE_TENANT_ID }}
-
-#       - name: Deploy to Azure Web App
-#         id: deploy-to-webapp
-#         uses: azure/webapps-deploy@v3
-#         with:
-#           app-name: 'AzureSchoolProject'
-#           slot-name: 'Production'
-#           package: ${{ github.workspace }}
