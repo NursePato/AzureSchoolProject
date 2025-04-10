@@ -1,0 +1,55 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+
+jobs:
+- job: BuildAndDeploy
+  steps:
+  - task: UseDotNet@2
+    inputs:
+      packageType: 'sdk'
+      version: '8.0.x'
+      installationPath: $(Agent.ToolsDirectory)/dotnet
+
+  - task: Checkout@1
+    displayName: 'Checkout code'
+
+  - task: DotNetCoreCLI@2
+    displayName: 'Restore dependencies'
+    inputs:
+      command: restore
+      projects: '$(solution)'
+
+  - task: DotNetCoreCLI@2
+    displayName: 'Build project'
+    inputs:
+      command: build
+      projects: '$(solution)'
+      arguments: '--configuration $(buildConfiguration)'
+
+  - task: DotNetCoreCLI@2
+    displayName: 'Publish project'
+    inputs:
+      command: publish
+      projects: '$(solution)'
+      publishWebProjects: false
+      arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact'
+    inputs:
+      pathToPublish: '$(Build.ArtifactStagingDirectory)'
+      artifactName: 'drop'
+
+  - task: AzureWebApp@1
+    displayName: 'Deploy to Azure Web App'
+    inputs:
+      appName: 'AzureSchoolProject'  # Update with your actual app name
+      package: '$(Build.ArtifactStagingDirectory)/drop'
