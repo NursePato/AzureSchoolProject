@@ -2,15 +2,15 @@ trigger:
 - main
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: 'windows-latest'
 
 variables:
-  solution: '*.sln'
+  solution: 'GameStore.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
 jobs:
-- job: BuildAndDeploy
+- job: BuildAndPublish
   steps:
   - task: UseDotNet@2
     inputs:
@@ -40,16 +40,10 @@ jobs:
       command: publish
       projects: '$(solution)'
       publishWebProjects: false
-      arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+      arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/publish'
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact'
     inputs:
-      pathToPublish: '$(Build.ArtifactStagingDirectory)'
+      pathToPublish: '$(Build.ArtifactStagingDirectory)/publish'
       artifactName: 'drop'
-
-  - task: AzureWebApp@1
-    displayName: 'Deploy to Azure Web App'
-    inputs:
-      appName: 'AzureSchoolProject'  # Update with your actual app name
-      package: '$(Build.ArtifactStagingDirectory)/drop'
