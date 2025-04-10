@@ -12,6 +12,7 @@ namespace GameStore.Services
     {
       _filePath = Path.Combine(Directory.GetCurrentDirectory(), "games.json");
       _apiKey = configuration["FakeApiKey"] ?? throw new Exception("API key not found"); // Simulating that it's coming from Key Vault & adding fallback
+      Console.WriteLine($"Loaded Fake API Key: {_apiKey}");
     }
     //private readonly string _filePath = Path.Combine(Directory.GetCurrentDirectory(), "games.json");
 
