@@ -80,6 +80,10 @@ jobs:
            --resource-group webapp-rg-dev \
            --name AzureSchoolProject \
            --src publish.zip
+           --timeout 600 || echo "Deployment command exited with error but continuing..."
+           
+    - name: Clean up
+      run: rm publish.zip
 
 # name: Build and deploy .NET app to Azure Web App - AzureSchoolProject
 

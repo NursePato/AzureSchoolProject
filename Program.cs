@@ -4,9 +4,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Lägg till tjänster för MVC och GameService
 builder.Services.AddControllersWithViews();
-builder.Services.AddSingleton<GameService>();
+builder.Services.AddSingleton<GameService>(provider =>
+{
+    var config = provider.GetRequiredService<IConfiguration>();
+    return new GameService(config);
+});
 
 var app = builder.Build();
+
 
 // Konfigurera HTTP-anrop
 if (app.Environment.IsDevelopment())
