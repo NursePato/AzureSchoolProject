@@ -46,6 +46,10 @@ The issue you're running into is because az webapp deployment source config-zip 
 - Creating a Key Vault to store sensitive data, my goal is to hold an api-key and fetch it through the code.
 - Search for Key Vault in Azure portal -> Create -> Name it -> Leaving Enable public access checked as I don't want to setup IAM/manage ip-adresses for this project.
 - First hurdle, RBAC, Im not allowed to read secrets from Azure Key Vault with the student account we are on, so I will mock the key vault, just to show how I would have done it.
+## Update after new information from classmates
+- Apparently we can give us access through IAM by pressing Add -> Add Role assignment -> search for Key vault administrator, select it -> Go to Members and search and add your account.
+- Through Key Vault -> secrets -> Generate/import -> Name it & add your secret value, create.
+- 
 
 #### Mocking api key
 - adding this code to appsettings.json: "FakeApiKey": "1234-5678-FAKE-KEY",

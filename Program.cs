@@ -1,7 +1,11 @@
 using GameStore.Services;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
+
 
 var builder = WebApplication.CreateBuilder(args);
-
+var keyVaultUrl = "https://PM.vault.azure.net/";
+builder.Configuration.AddAzureKeyVault(new Uri(keyVaultUrl), new DefaultAzureCredential());
 // Lägg till tjänster för MVC och GameService
 builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<GameService>(provider =>
