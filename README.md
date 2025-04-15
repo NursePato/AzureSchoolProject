@@ -49,7 +49,6 @@ The issue you're running into is because az webapp deployment source config-zip 
 #### Update after new information from classmates
 - Apparently we can give us access through IAM by pressing Add -> Add Role assignment -> search for Key vault administrator, select it -> Go to Members and search and add your account.
 - Through Key Vault -> secrets -> Generate/import -> Name it & add your secret value, create.
-- 
 
 #### Mocking api key
 - adding this code to appsettings.json: "FakeApiKey": "1234-5678-FAKE-KEY",
