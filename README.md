@@ -68,5 +68,5 @@ No hosted parallelism has been purchased or granted. To request a free paralleli
 ```
 - Since we are limited to 1 parallel action with our Azure student account, and our Github actions is consuming that action.
 
-#### Update after requesting lifting parallelism through the available Microsoft form
+#### Update after requesting lifting parallelism limit through the available form
 - I am now able to deploy through my pipeline in Azure DevOps
